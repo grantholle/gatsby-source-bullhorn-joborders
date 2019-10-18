@@ -1,10 +1,41 @@
-const querystring = require(`querystring`)
 const axios = require(`axios`)
 
-var apiBase = `https://en.wikipedia.org/w/api.php?`
+const getBaseUrl = pluginOptions => {
+  return `https://public-rest${pluginOptions.swimlane}.bullhornstaffing.com/rest-services/${pluginOptions.corpToken}`
+}
 
-const fetchJobOrders = pluginOptions => {}
+const formatFilter = (filter = {}, isSearch = false, ignoreFields = []) => {
+  let additionalFilter = ''
 
-const fetchJobCategories = pluginOptions = {}
+  for (const key in filter) {
+    if (!ignoreFields.includes(key)) {
+      const filterValue = filter[key];
 
-module.exports = { fetchJobOrders, fetchJobCategories }
+      if (typeof filterValue === 'string') {
+        additionalFilter += ` AND (${filterValue})`;
+      } else if (filterValue.length) {
+        additionalFilter += ` AND (${filterValue.join(' OR ')})`;
+      }
+    }
+  }
+
+  return additionalFilter.replace(/{\?\^\^equals}/g, isSearch ? ':' : '=').replace(/{\?\^\^delimiter}/g, isSearch ? '"' : '\'')
+}
+
+const fetchJobs = async pluginOptions => {
+  const params = {
+    where: `(isOpen=true) AND (isDeleted=false)${formatFilter()}`,
+    fields: '*',
+    count: 300,
+  }
+
+  const queryString = Object.keys(params)
+    .map(key => `${key}=${params[key]}`)
+    .join('&')
+
+  const { data } = await axios.get(`${getBaseUrl(pluginOptions)}/query/JobBoardPost?${queryString}`)
+
+  return data.data
+}
+
+module.exports = { fetchJobs }

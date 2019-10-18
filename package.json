@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-bullhorn-joborders",
-  "version": "2.1.10",
+  "version": "1.0.0",
   "description": "Gatsby source plugin for pulling JobOrders from Bullhorn",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.6a.3",
+    "@babel/runtime": "^7.6.3",
     "axios": "^0.19.0"
   },
   "devDependencies": {
